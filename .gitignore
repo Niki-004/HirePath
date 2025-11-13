@@ -1,0 +1,11 @@
+# Gradle
+backend-java/.gradle/
+backend-java/build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
