@@ -21,13 +21,19 @@ public class Job {
     private String jobUrl;
 
     @Column(nullable = false)
-    private String status; // e.g. APPLIED, IN_REVIEW, REJECTED, OFFER
+    private String status; // APPLIED, IN_REVIEW, REJECTED, OFFER
 
     @Column(name = "applied_date")
     private LocalDate appliedDate;
 
     @Column(length = 1000)
     private String notes; // for suggestion / extra info
+
+    @Transient
+    private Long daysSinceApplied;
+
+    @Transient
+    private String suggestion;
 
     public Job() {
     }
@@ -86,5 +92,21 @@ public class Job {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Long getDaysSinceApplied() {
+        return daysSinceApplied;
+    }
+
+    public void setDaysSinceApplied(Long daysSinceApplied) {
+        this.daysSinceApplied = daysSinceApplied;
+    }
+
+    public String getSuggestion() {
+        return suggestion;
+    }
+
+    public void setSuggestion(String suggestion) {
+        this.suggestion = suggestion;
     }
 }
