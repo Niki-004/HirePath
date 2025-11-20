@@ -109,4 +109,11 @@ public class Job {
     public void setSuggestion(String suggestion) {
         this.suggestion = suggestion;
     }
+    public Long getDaysSinceApplied() {
+    if (this.appliedDate == null) {
+        return null;
+    }
+    return java.time.temporal.ChronoUnit.DAYS.between(this.appliedDate, LocalDate.now());
+}
+
 }
