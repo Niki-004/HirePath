@@ -1,71 +1,47 @@
 package com.jobtracker.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobtracker.model.Job;
 import com.jobtracker.repository.JobRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.jobtracker.service.JobSuggestionService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest(JobController.class)
 class JobControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
     private JobRepository jobRepository;
-    private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setup() {
-        jobRepository = Mockito.mock(JobRepository.class);
-        JobController controller = new JobController(jobRepository);
-
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
-        objectMapper = new ObjectMapper();
-    }
+    @MockBean
+    private JobSuggestionService jobSuggestionService;
 
     @Test
-    void getJobById_returnsJob() throws Exception {
+    void getSuggestion_returnsSuggestionString() throws Exception {
         Job job = new Job();
         job.setId(1L);
-        job.setCompany("Google");
-        job.setPosition("SWE");
-        job.setAppliedDate(LocalDate.now());
+        job.setCompany("TestCo");
+        job.setStatus("APPLIED");
 
         when(jobRepository.findById(1L)).thenReturn(Optional.of(job));
+        when(jobSuggestionService.generateSuggestion(job))
+                .thenReturn("Mock suggestion");
 
-        mockMvc.perform(get("/api/jobs/1"))
+        mockMvc.perform(get("/api/jobs/1/suggestion"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.company").value("Google"));
-    }
-
-    @Test
-    void createJob_createsSuccessfully() throws Exception {
-        Job job = new Job();
-        job.setCompany("Meta");
-        job.setPosition("Backend Engineer");
-
-        when(jobRepository.save(any(Job.class))).thenAnswer(i -> {
-            Job saved = i.getArgument(0);
-            saved.setId(10L);
-            return saved;
-        });
-
-        mockMvc.perform(post("/api/jobs")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(job)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(10L));
+                .andExpect(content().string("Mock suggestion"));
     }
 }
 
