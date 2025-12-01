@@ -1,31 +1,55 @@
 version: "3.9"
 
 services:
+
   backend:
     build: ./backend-java
     container_name: jobtracker-backend
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/jobtracker
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
     ports:
       - "8080:8080"
     depends_on:
       - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/jobtracker
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_FLYWAY_ENABLED: true
+    networks:
+      - jobnet
 
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     container_name: jobtracker-db
+    restart: always
     environment:
-      POSTGRES_DB: jobtracker
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+      POSTGRES_DB: jobtracker
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - jobdata:/var/lib/postgresql/data
+    networks:
+      - jobnet
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: jobtracker-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    networks:
+      - jobnet
+
+networks:
+  jobnet:
 
 volumes:
-  postgres_data:
+  jobdata:
 
