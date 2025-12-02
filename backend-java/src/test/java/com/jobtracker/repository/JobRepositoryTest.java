@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class JobRepositoryTest {
@@ -16,44 +16,36 @@ class JobRepositoryTest {
     @Autowired
     private JobRepository jobRepository;
 
-    private Job sampleJob() {
+    @Test
+    void saveAndFindAll_jobsWorkCorrectly() {
         Job job = new Job();
-        job.setCompany("Apple");
-        job.setPosition("Software Engineer Intern");
+        job.setCompany("Amazon");
+        job.setPosition("Backend Intern");
         job.setStatus("APPLIED");
         job.setAppliedDate(LocalDate.now());
-        job.setNotes("Excited for this role!");
-        return job;
-    }
 
-    @Test
-    void saveJob_savesCorrectly() {
-        Job job = sampleJob();
-        Job saved = jobRepository.save(job);
-
-        assertNotNull(saved.getId());
-        assertEquals("Apple", saved.getCompany());
-    }
-
-    @Test
-    void findAll_returnsJobs() {
-        Job job = sampleJob();
         jobRepository.save(job);
 
-        List<Job> list = jobRepository.findAll();
+        List<Job> allJobs = jobRepository.findAll();
 
-        assertFalse(list.isEmpty());
-        assertEquals("Apple", list.get(0).getCompany());
+        assertThat(allJobs).hasSize(1);
+        assertThat(allJobs.get(0).getCompany()).isEqualTo("Amazon");
     }
 
     @Test
-    void deleteJob_removesEntry() {
-        Job job = sampleJob();
+    void deleteById_worksCorrectly() {
+        Job job = new Job();
+        job.setCompany("Netflix");
+        job.setPosition("SWE Intern");
+        job.setStatus("APPLIED");
+        job.setAppliedDate(LocalDate.now());
+
         Job saved = jobRepository.save(job);
 
         jobRepository.deleteById(saved.getId());
 
-        assertFalse(jobRepository.findById(saved.getId()).isPresent());
+        List<Job> remaining = jobRepository.findAll();
+        assertThat(remaining).isEmpty();
     }
 }
 
