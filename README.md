@@ -32,3 +32,19 @@ This is the backend API for my HirePath job application tracker, built with **Sp
 cd backend-java
 ./gradlew clean bootRun
 
+---
+
+## 🔍 Day 9 – SQL, Python & Regex Tools
+
+### 1. SQL analytics (`sql/job_queries.sql`)
+
+This file contains example queries to analyze job applications:
+
+- Count total jobs, applied, interviews, offers, rejections  
+- Group jobs by company and status  
+- Find applications older than a certain number of days  
+
+Run with `psql` (example):
+
+```bash
+psql -h localhost -U jobtracker_user -d jobtracker_db -f sql/job_queries.sql
