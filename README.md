@@ -48,3 +48,23 @@ Run with `psql` (example):
 
 ```bash
 psql -h localhost -U jobtracker_user -d jobtracker_db -f sql/job_queries.sql
+---
+
+## ✅ Day 9 – SQL, Python & Regex Utilities
+
+Today’s focus was on analytics and helper tools around the JobTracker backend.
+
+### 1. SQL Analytics (`sql/job_queries.sql` and `sql/job_data_report.sql`)
+
+These files contain example queries to analyze job applications:
+
+- Count total jobs, interviews, offers, rejections
+- Group applications by company and status
+- Find older applications (e.g., applied more than N days ago)
+- Basic reporting for how many jobs are in each stage
+
+Example usage (with PostgreSQL):
+
+```bash
+psql -h localhost -U jobtracker_user -d jobtracker_db -f sql/job_queries.sql
+psql -h localhost -U jobtracker_user -d jobtracker_db -f sql/job_data_report.sql
