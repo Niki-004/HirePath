@@ -1,107 +1,58 @@
-# HirePath / JobTracker – Sequence Diagram
+# Sequence Diagram – Job Creation & Suggestion Flow
 
-This diagram shows how a **client request flows through the backend** when creating or retrieving a job application.
-
----
-
-## 1. Create Job Request (POST /api/jobs)
-
-Text-based sequence diagram:
-
-```
-Client
-  |
-  | POST /api/jobs
-  v
-JobController
-  |
-  | validate + set default status
-  v
-JobRepository
-  |
-  | save(Job)
-  v
-Database (jobs table)
-  |
-  | return saved entity
-  v
-JobController
-  |
-  | HTTP 201 Created + JSON response
-  v
-Client
-```
+This document explains the flow of data through the backend using two sequence diagrams:
+1. Creating a job (`POST /api/jobs`)
+2. Getting a job suggestion (`GET /api/jobs/{id}/suggestion`)
 
 ---
 
-## 2. Get All Jobs (GET /api/jobs)
+# 1. Sequence Diagram – Create Job
 
 ```
-Client
-  |
-  | GET /api/jobs
-  v
-JobController
-  |
-  | jobRepository.findAll()
-  v
-JobRepository
-  |
-  | SELECT * FROM jobs
-  v
-Database
-  |
-  v
-JobController
-  |
-  | return List<Job>
-  v
-Client
+Client → JobController : POST /api/jobs
+JobController → JobRepository : save(job)
+JobRepository → Database : INSERT job row
+Database → JobRepository : return saved row
+JobRepository → JobController : return saved job
+JobController → Client : JSON response
 ```
+
+### Explanation
+- Controller receives JSON and converts it into a `Job` object  
+- Repository saves it to the DB  
+- DB returns the generated ID  
+- Controller returns the created job  
 
 ---
 
-## 3. Job Suggestion Request (GET /api/jobs/{id}/suggestion)
+# 2. Sequence Diagram – Job Suggestion
 
 ```
-Client
-  |
-  | GET /api/jobs/12/suggestion
-  v
-SuggestionController
-  |
-  | jobRepository.findById(12)
-  v
-JobRepository
-  |
-  | SELECT * FROM jobs WHERE id = 12
-  v
-Database
-  |
-  v
-SuggestionController
-  |
-  | suggestionService.generateSuggestion(job)
-  v
-JobSuggestionService
-  |
-  | returns suggestion string
-  v
-SuggestionController
-  |
-  | HTTP 200 OK + {"suggestion": "..."}
-  v
-Client
+Client → SuggestionController : GET /api/jobs/{id}/suggestion
+SuggestionController → JobRepository : findById(id)
+JobRepository → Database : SELECT * FROM jobs WHERE id = ?
+Database → JobRepository : return job row
+SuggestionController → JobSuggestionService : generateSuggestion(job)
+JobSuggestionService → SuggestionController : return suggestion text
+SuggestionController → Client : JSON { suggestion: "..." }
 ```
+
+### Explanation
+- API receives the job ID  
+- Repository fetches it  
+- Service generates a suggestion string  
+- Controller sends JSON back  
 
 ---
 
-## Purpose of This Document
+# 3. Sequence Diagram Key
 
-- Helps understand **flow of execution**
-- Helps during **interviews**
-- Helps collaborators understand the backend
+| Symbol | Meaning |
+|-------|---------|
+| →     | Call / request |
+| ←     | Return result |
+| :     | Method/action description |
 
 ---
 
-# ✔ End of Sequence Diagram
+# End of document
