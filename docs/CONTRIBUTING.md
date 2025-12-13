@@ -1,10 +1,10 @@
-# Contributing to HirePath (JobTracker)
+# Contributing to HirePath
 
-Thanks for your interest in contributing to this project 🚀
+Thank you for your interest in contributing to HirePath 🚀
 
-## Project Setup
+This project is currently under active development and focuses on building a
+job application tracking and analytics platform.
 
-### Backend (Spring Boot)
-```bash
-cd backend-java
-./gradlew bootRun
+---
+
+## Project Structure
