@@ -1,22 +1,47 @@
-# Day 9 – Job URL Validator using Regex
+"""
+Job URL Validator (Regex)
+-------------------------
+Validates that a job URL looks like a real http/https link,
+and optionally checks common job-site patterns.
+
+Run:
+  python3 regex-utils/job_url_validator.py "https://amazon.jobs/en/jobs/123"
+"""
 
 import re
+import sys
 
-URL_PATTERN = re.compile(
-    r"^(https?://)?(www\.)?[A-Za-z0-9-]+\.[A-Za-z]{2,}(/.*)?$"
+# Basic URL validation (http/https, domain, optional path/query)
+BASIC_URL_REGEX = re.compile(
+    r"^https?://"
+    r"([a-z0-9-]+\.)+[a-z]{2,}"      # domain
+    r"(:\d{1,5})?"                   # optional port
+    r"(/[^ \t\r\n]*)?$",             # optional path/query
+    re.IGNORECASE
 )
 
-def is_valid_job_url(url):
-    return bool(URL_PATTERN.match(url))
+# Optional: common job sites (extend anytime)
+COMMON_JOB_SITES_REGEX = re.compile(
+    r"(linkedin\.com/jobs|indeed\.com|greenhouse\.io|lever\.co|workday\.com|amazon\.jobs|careers\.google\.com)",
+    re.IGNORECASE
+)
 
+def is_valid_url(url: str) -> bool:
+    return bool(BASIC_URL_REGEX.match(url.strip()))
+
+def is_common_job_site(url: str) -> bool:
+    return bool(COMMON_JOB_SITES_REGEX.search(url))
 
 if __name__ == "__main__":
-    test_urls = [
-        "https://amazon.jobs/en/jobs/12345",
-        "www.linkedin.com/jobs/view/55",
-        "bad-url",
-        "http:/wrong.com"
-    ]
+    if len(sys.argv) < 2:
+        print("Usage: python3 regex-utils/job_url_validator.py <url>")
+        sys.exit(1)
 
-    for u in test_urls:
-        print(u, "=>", is_valid_job_url(u))
+    url = sys.argv[1].strip()
+
+    valid = is_valid_url(url)
+    common = is_common_job_site(url) if valid else False
+
+    print("URL:", url)
+    print("Valid:", valid)
+    print("Common job site:", common)
