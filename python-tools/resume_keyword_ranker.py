@@ -1,25 +1,51 @@
-# Day 9 – Resume Keyword Ranker
+"""
+Resume Keyword Ranker
+---------------------
+Scores how well a resume matches a job description
+based on keyword frequency.
+"""
 
 import re
+from collections import Counter
 
-def rank_keywords(resume_text, keywords):
-    results = {}
+def clean_text(text: str) -> list[str]:
+    text = text.lower()
+    text = re.sub(r"[^a-z0-9\s]", "", text)
+    return text.split()
 
-    for word in keywords:
-        pattern = rf"\b{re.escape(word)}\b"
-        matches = re.findall(pattern, resume_text, flags=re.IGNORECASE)
-        results[word] = len(matches)
+def keyword_score(resume_text: str, job_description: str) -> dict:
+    resume_words = clean_text(resume_text)
+    jd_words = clean_text(job_description)
 
-    return results
+    resume_count = Counter(resume_words)
+    jd_keywords = set(jd_words)
 
+    matched = {
+        word: resume_count[word]
+        for word in jd_keywords
+        if word in resume_count
+    }
+
+    score = sum(matched.values())
+
+    return {
+        "score": score,
+        "matched_keywords": dict(sorted(matched.items(),
+                                         key=lambda x: x[1],
+                                         reverse=True))
+    }
 
 if __name__ == "__main__":
     resume = """
-    Experienced in Java, Spring Boot, REST APIs, SQL, Git, and cloud deployment.
-    Worked with Python and automated pipelines.
+    Software engineering student with experience in Java,
+    Spring Boot, SQL, Git, REST APIs, and basic Python.
     """
 
-    target_keywords = ["Java", "Python", "Spring", "SQL", "AWS"]
+    job_desc = """
+    Looking for a backend intern with Java, Spring Boot,
+    REST APIs, SQL, and Git experience.
+    """
 
-    print("Keyword Ranking:")
-    print(rank_keywords(resume, target_keywords))
+    result = keyword_score(resume, job_desc)
+    print("Score:", result["score"])
+    print("Matched keywords:", result["matched_keywords"])
