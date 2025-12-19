@@ -68,3 +68,17 @@ Example usage (with PostgreSQL):
 ```bash
 psql -h localhost -U jobtracker_user -d jobtracker_db -f sql/job_queries.sql
 psql -h localhost -U jobtracker_user -d jobtracker_db -f sql/job_data_report.sql
+---
+---
+
+## 🐳 Run Backend with Docker
+
+This project includes Docker support for running the Spring Boot backend without installing Java or Gradle locally.
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Build & Run
+```bash
+docker compose up --build
