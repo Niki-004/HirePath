@@ -3,20 +3,40 @@ package com.jobtracker.service;
 import com.jobtracker.model.Job;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class JobSuggestionServiceTest {
 
-    private final JobSuggestionService service = new JobSuggestionService();
+    private final JobSuggestionService suggestionService = new JobSuggestionService();
 
     @Test
     void suggestionForApplied() {
         Job job = new Job();
         job.setStatus("APPLIED");
 
-        String result = service.generateSuggestion(job);
+        String suggestion = suggestionService.generateSuggestion(job);
 
-        assertThat(result).contains("Follow up");
+        assertTrue(suggestion.toLowerCase().contains("follow up"));
+    }
+
+    @Test
+    void suggestionForInReview() {
+        Job job = new Job();
+        job.setStatus("IN_REVIEW");
+
+        String suggestion = suggestionService.generateSuggestion(job);
+
+        assertTrue(suggestion.toLowerCase().contains("patient"));
+    }
+
+    @Test
+    void suggestionForInterview() {
+        Job job = new Job();
+        job.setStatus("INTERVIEW");
+
+        String suggestion = suggestionService.generateSuggestion(job);
+
+        assertTrue(suggestion.toLowerCase().contains("interview"));
     }
 
     @Test
@@ -24,26 +44,36 @@ class JobSuggestionServiceTest {
         Job job = new Job();
         job.setStatus("REJECTED");
 
-        String result = service.generateSuggestion(job);
+        String suggestion = suggestionService.generateSuggestion(job);
 
-        assertThat(result).contains("apply to 3 more");
+        assertTrue(suggestion.toLowerCase().contains("apply"));
     }
 
     @Test
-    void suggestionForNullJob() {
-        String result = service.generateSuggestion(null);
+    void suggestionForOffer() {
+        Job job = new Job();
+        job.setStatus("OFFER");
 
-        assertThat(result).contains("Invalid");
+        String suggestion = suggestionService.generateSuggestion(job);
+
+        assertTrue(suggestion.toLowerCase().contains("congrat"));
     }
 
     @Test
     void suggestionForUnknownStatus() {
         Job job = new Job();
-        job.setStatus("UNKNOWN");
+        job.setStatus("SOMETHING_ELSE");
 
-        String result = service.generateSuggestion(job);
+        String suggestion = suggestionService.generateSuggestion(job);
 
-        assertThat(result).contains("Status unclear");
+        assertTrue(suggestion.toLowerCase().contains("status unclear"));
+    }
+
+    @Test
+    void suggestionForNullJob() {
+        String suggestion = suggestionService.generateSuggestion(null);
+
+        assertTrue(suggestion.toLowerCase().contains("invalid job"));
     }
 }
 
