@@ -10,3 +10,8 @@ backend-java/build/
 # OS
 .DS_Store
 .env
+# Editor backup files
+*.save
+*.swp
+*.tmp
+.DS_Store
